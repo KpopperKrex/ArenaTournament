@@ -1,0 +1,39 @@
+
+name: Build ArenaTournament
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Extract source ZIP
+        run: |
+          unzip -q ArenaTournament-0.6.0-alpha-source.zip
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+
+      - name: Build plugin
+        run: gradle -p ArenaTournament clean build
+
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArenaTournament-JAR
+          path: ArenaTournament/build/libs/*.jar
